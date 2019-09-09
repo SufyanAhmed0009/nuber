@@ -16,3 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+//Create new booking
+Route::post('create','RequestController@store');
+//show list of all booking
+Route::get('list','RequestController@get');
+//Route::apiresource('create','RequestController');
