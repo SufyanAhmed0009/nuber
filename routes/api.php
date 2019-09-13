@@ -18,6 +18,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 //Create new booking
 Route::post('create','RequestController@store');
+
 //show list of all booking
 Route::get('list','RequestController@get');
+
+Route::get('show/{code}','RequestController@showid');
 //Route::apiresource('create','RequestController');
+Route::delete('del/{id}','RequestController@delete');
+
+Route::put('update/{id}','RequestController@update');
+
+Route::get('pluck','RequestController@show');
+
+Route::get('status','RequestController@status');
+
+Route::put('cancel/{code}','RequestController@cancel');

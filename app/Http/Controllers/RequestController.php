@@ -8,71 +8,74 @@ use DB;
 
 class RequestController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // create Booking Request
     public function store(Request $request)
     {
         $book = new Booking;
+        
         $book->Name=$request->input('Name');
         $book->Email=$request->input('Email');
         $book->Car_type=$request->input('Car_type');
-        $book->Status=$request->input('Status');
+//      $book->Status=$request->input('Status');
+        $book->Status='Pending';
+        $book->Code = $this->unique_code(8);
         $book->save();
-        return response()->json($book);
+     //  $code = unique_code(8);
+        return response()->json("Your Booking Reference Number is: ".$book->Code);
+
     }
 
+    public function unique_code($limit)
+    {
+    return substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, $limit);
+    }
+    
+     //for cancel the booking
+    public function cancel(Request $request, $code)
+    {
+        $cancel= new Booking;
+        $cancel=Booking::where('Code',$code)->first();
+        $cancel->Status=$request->input('Status');
+        $cancel->save();
+
+        return response()->json("The booking has been cancelled");
+    }
+
+    // List of all Bookings
+    public function get()
+    {
+        $book = Booking::all();
+        return response()->json($book);
+     }
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+     // using pluck
+    public function show()
     {
-        
-     }
-
-       public function get()
-    {
-        $book = Booking::all();
+    // for all record of single column
+        $book=Booking::pluck('Name');
+      //for first record
+      //   $book=Booking::pluck('Name')->first();
         return response()->json($book);
      }
 
+     
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+      public function showid($code){
+       
+       // $book=Booking::find($code);
+      //select statement with 'where' clause
+         $book = Booking::where('Code','=',$code)->get(); 
+        return response()->json($book);
     }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -81,19 +84,39 @@ class RequestController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+
+
+     // for 
+    public function update (Request $request,$a)
     {
-        //
+        $book = new Booking;
+        $book= Booking::where('Code', $a)->first();
+        //echo $a;
+        //dd($book->id);
+        //echo $book;
+        $book->Status= $request->input('Status');
+        $book->save();
+       return response()->json( ['message' => 'Updated Successfully']);
+     
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+  
+
+      public function delete(Booking $id)
     {
-        //
+        $id->delete();
+
+        return response()->json(
+            ['Message' => 'Deleted']
+        );
     }
+    
+    //checking status
+    public function status()
+    {
+        $status= Booking::where('Status','accepted')->get();
+        return response()->json($status);
+    }
+
+   
 }

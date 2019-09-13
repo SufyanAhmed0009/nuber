@@ -15,3 +15,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('show','RequestController@get');
+Route::get('code/{id}', 'RequestController@unique_code');

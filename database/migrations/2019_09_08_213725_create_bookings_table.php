@@ -19,6 +19,7 @@ class CreateBookingsTable extends Migration
             $table->string('Email');
             $table->string('Car_type');
             $table->string('Status');
+            $table->string('Code');
             $table->timestamps();
         });
     }
